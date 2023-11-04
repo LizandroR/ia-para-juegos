@@ -13,7 +13,7 @@ Question 2.
 Max Value() 
 Representa la logica de decisión de Pacman. Se llama con el estado del juego y la profundidad actual de la búsqueda. 
 Si el estado del juego es terminal (Pacman gana o pierde) o si se ha alcanzado la profundidad máxima (depth == 0), la función devuelve el valor de la función de evaluación para ese estado del juego.
-Si no es un estado terminal y aún hay profundidad para explorar, se itera sobre todas las acciones legales de Pacman. Por cada acción, se genera el estado sucesor y se llama a  minValue() para el primer fantasma (agente 1), pasando el nuevo estado y la profundidad actual menos uno. 
+Si no es un estado terminal y aún hay profundidad para explorar, se itera sobre todas las acciones legales de Pacman. Por cada acción, se genera el estado sucesor y se llama a  minValue() para el siguiente agente, que será el primer fantasma en la primera ronda de acciones de Pacman, pasando el nuevo estado y la profundidad actual menos uno." 
 La función busca el valor máximo entre los valores devueltos por minValue, que representa el mejor resultado posible para Pacman después de que todos los fantasmas hayan hecho su movimiento mas optimo.
 
 Min Value()
