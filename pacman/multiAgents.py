@@ -151,7 +151,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                     v = min(v, minValue(gameState.generateSuccessor(agentIndex, action), agentIndex + 1, depth))
             return v
             
-        #Se calcula el valor máximo que pacman puede forzar.
+        # Se calcula el valor máximo que pacman puede forzar.
         def maxValue(gameState, depth):
             
             if gameState.isWin() or gameState.isLose() or depth == 0:
@@ -172,7 +172,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         bestScore = -float('inf')
         bestAction = None
         
-         # Iteramos sobre todas las acciones legales que Pacman puede tomar desde el estado actual del juego.
+        # Iteramos sobre todas las acciones legales que Pacman puede tomar desde el estado actual del juego.
         for action in gameState.getLegalActions(0):
 
             # Generamos el estado sucesor para cada acción posible de Pacman.
@@ -192,17 +192,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
-    """
-      Your minimax agent with alpha-beta pruning (question 3)
-    """
-
     def getAction(self, gameState):
-        """
-          Returns the minimax action using self.depth and self.evaluationFunction
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        
+        def minValue(gameState, agentIndex, depth, alpha, beta):
+            if gameState.isWin() or gameState.isLose() or depth == 0:
+                return self.evaluationFunction(gameState)
+            
+            v = float('inf')
+            for action in gameState.getLegalActions(agentIndex):
+                if agentIndex == gameState.getNumAgents() - 1:
+                    v = min(v, maxValue(gameState.generateSuccessor(agentIndex, action), depth - 1, alpha, beta))
+                else:
+                    v = min(v, minValue(gameState.generateSuccessor(agentIndex, action), agentIndex + 1, depth, alpha, beta))
+                if v < alpha:
+                    return v  # Poda alfa: corta la búsqueda si encontramos un valor menor al mejor valor del maximizador.
+                beta = min(beta, v)  # Actualiza el mejor valor que el minimizador puede garantizar.
+            return v
+            
+        def maxValue(gameState, depth, alpha, beta):
+            if gameState.isWin() or gameState.isLose() or depth == 0:
+                return self.evaluationFunction(gameState)
+            
+            v = -float('inf')
+            for action in gameState.getLegalActions(0):
+                v = max(v, minValue(gameState.generateSuccessor(0, action), 1, depth, alpha, beta))
+                if v > beta:
+                    return v  # Poda beta: corta la búsqueda si encontramos un valor mayor al mejor valor del minimizador.
+                alpha = max(alpha, v)  # Actualiza el mejor valor que el maximizador puede garantizar.
+            return v
+        
+        bestScore = -float('inf')
+        bestAction = None
+        alpha = -float('inf')  # Inicializa alfa como el peor valor posible para el maximizador.
+        beta = float('inf')    # Inicializa beta como el peor valor posible para el minimizador.
+        
+        for action in gameState.getLegalActions(0):
+            nextState = gameState.generateSuccessor(0, action)
+            score = minValue(nextState, 1, self.depth, alpha, beta)
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+            alpha = max(alpha, bestScore)  # Actualiza alfa con la mejor puntuación encontrada para Pacman.
+            
+        return bestAction
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
