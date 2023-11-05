@@ -18,6 +18,7 @@ Representa la lógica de decisión de los fantasmas. Itera sobre las acciones le
 
 getAction()
 Función principal que determina la acción de Pacman. Itera sobre las acciones legales de Pacman y llama a minValue para el primer fantasma. La acción que conduce al valor más alto es seleccionada, asumiendo que los fantasmas juegan de manera óptima
+
 Question 4 y 5 (Tuve que hacer la 4 para poder hacer la 5)
 
 getAction() utiliza una función lambda para elegir la acción que maximiza el valor esperado, calculado por getActionValue. Lambda es eficiente para pasar funciones simples directamente dentro de llamadas a otras funciones, en este caso, seleccionando la acción óptima sin necesidad de una declaración de función adicional.
