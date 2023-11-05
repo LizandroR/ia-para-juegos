@@ -126,50 +126,70 @@ class MultiAgentSearchAgent(Agent):
 
 class MinimaxAgent(MultiAgentSearchAgent):
     def getAction(self, gameState):
-        """
-          Returns the minimax action from the current gameState using self.depth
-          and self.evaluationFunction.
-
-          Here are some method calls that might be useful when implementing minimax.
-
-          gameState.getLegalActions(agentIndex):
-            Returns a list of legal actions for an agent
-            agentIndex=0 means Pacman, ghosts are >= 1
-
-          gameState.generateSuccessor(agentIndex, action):
-            Returns the successor game state after an agent takes an action
-
-          gameState.getNumAgents():
-            Returns the total number of agents in the game
-        """
+        
+        # Se calcula el valor mínimo que el agente fantasma puede forzar a pacamn.
+        # Se llama para cada agente fantasma en el juego.
         def minValue(gameState, agentIndex, depth):
+
+            # Si el juego ha terminado o hemos alcanzado la profundidad máxima de búsqueda,
+            # retornamos el valor de la función de evaluación para el estado actual del juego.
             if gameState.isWin() or gameState.isLose() or depth == 0:
                 return self.evaluationFunction(gameState)
+            
+            # Inicializamos v a infinito. Esto representa el peor caso para el jugador (Pacman).
             v = float('inf')
+            
+            # Iteramos sobre todas las acciones legales que el agente fantasma puede tomar.
             for action in gameState.getLegalActions(agentIndex):
+
+                # Si estamos en el último agente fantasma, el siguiente agente es Pacman (agente 0),
+                # por lo que llamamos a maxValue para el siguiente nivel de profundidad.
                 if agentIndex == gameState.getNumAgents() - 1:
                     v = min(v, maxValue(gameState.generateSuccessor(agentIndex, action), depth - 1))
                 else:
+                    # Si no es el último fantasma, llamamos a minValue para el siguiente fantasma en el mismo nivel de profundidad.
                     v = min(v, minValue(gameState.generateSuccessor(agentIndex, action), agentIndex + 1, depth))
             return v
-
+            
+        #Se calcula el valor máximo que pacman puede forzar.
         def maxValue(gameState, depth):
+            
             if gameState.isWin() or gameState.isLose() or depth == 0:
                 return self.evaluationFunction(gameState)
+            
+            # Inicializamos v a menos infinito. Esto representa el peor caso para los agentes fantasmas.
             v = -float('inf')
-            for action in gameState.getLegalActions(0):
-                v = max(v, minValue(gameState.generateSuccessor(0, action), 1, depth))
-            return v
 
+            # Iteramos sobre todas las acciones legales que Pacman puede tomar.
+            for action in gameState.getLegalActions(0):                
+                # Llamamos a minValue para cada acción posible de Pacman, pasando el control al primer fantasma. 
+                # Actualizamos v con el valor máximo que Pacman puede obtener.
+                v = max(v, minValue(gameState.generateSuccessor(0, action), 1, depth))
+                
+            return v
+        
+        # Inicializamos la mejor puntuación y la mejor acción. Estos seguirán la mejor acción que Pacman puede tomar.
         bestScore = -float('inf')
         bestAction = None
+        
+         # Iteramos sobre todas las acciones legales que Pacman puede tomar desde el estado actual del juego.
         for action in gameState.getLegalActions(0):
+
+            # Generamos el estado sucesor para cada acción posible de Pacman.
             nextState = gameState.generateSuccessor(0, action)
+
+           # Calculamos el valor mínimo que el primer fantasma puede forzar a Pacman, dado el estado sucesor.
             score = minValue(nextState, 1, self.depth)
-            if score > bestScore:
+
+            # Si el valor calculado es mejor que la mejor puntuación que hemos encontrado hasta ahora,
+            # actualizamos la mejor puntuación y la mejor acción.
+            if score > bestScore:                
                 bestScore = score
                 bestAction = action
+
         return bestAction
+       
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
