@@ -53,49 +53,40 @@ class ReflexAgent(Agent):
 
     def evaluationFunction(self, currentGameState, action):
         """
-        Design a better evaluation function here.
-
-        The evaluation function takes in the current and proposed successor
-        GameStates (pacman.py) and returns a number, where higher numbers are better.
-
-        The code below extracts some useful information from the state, like the
-        remaining food (newFood) and Pacman position after moving (newPos).
-        newScaredTimes holds the number of moves that each ghost will remain
-        scared because of Pacman having eaten a power pellet.
-
-        Print out these variables to see what you're getting, then combine them
-        to create a masterful evaluation function.
-        """
-        # Useful information you can extract from a GameState (pacman.py)
+        Esta función evalúa el estado actual del juego y una acción propuesta, devolviendo
+        un número que representa la calidad de la acción. Un número más alto indica un
+        mejor movimiento para Pacman.
+    """
+        #Se obtiene informacion del estado actual del juego y la acción propuesta.
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-            # Factor de distancia a la comida más cercana
+        #Factor de distancia a la comida más cercana
         foodDistances = [manhattanDistance(newPos, food) for food in newFood.asList()]
         minFoodDistance = min(foodDistances) if foodDistances else 0
 
         # Factor de distancia a los fantasmas y sus estados de miedo
         ghostDistances = [manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates]
         minGhostDistance = min(ghostDistances) if ghostDistances else 0
-        scaredGhosts = sum(scaredTime > 0 for scaredTime in newScaredTimes)
+        scaredGhosts = sum(scaredTime > 0 for scaredTime in newScaredTimes) # Número de fantasmas asustados
 
-        # Penalizaciones y recompensas
+        #Penalizar a Pacman si se acerca demasiado a un fantasma activo
         ghostPenalty = 0
         if minGhostDistance <= 1:
             ghostPenalty = -200
 
-        # Si hay fantasmas asustados, incentivar a Pacman a perseguirlos
+        #Recompensa por acercarse a un fantasma asustado
         scaredGhostReward = 0
         if scaredGhosts > 0 and minGhostDistance > 1:
             scaredGhostReward = 200 / minGhostDistance
 
-        # Incentivar a Pacman a comer la comida más cercana
+        #Recompensa por comer la comida ma cercana
         foodReward = 0
         if minFoodDistance > 0:
-            foodReward = 10 / minFoodDistance
+            foodReward = 10 / minFoodDistance 
 
         # Combinar todos los factores en una puntuación final
         score = successorGameState.getScore()
