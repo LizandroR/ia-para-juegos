@@ -21,7 +21,7 @@ Función principal que determina la acción de Pacman. Itera sobre las acciones 
 
 Question 4 y 5 (Tuve que hacer la 4 para poder hacer la 5)
 
-getAction() utiliza una función lambda para elegir la acción que maximiza el valor esperado, calculado por getActionValue. Lambda es eficiente para pasar funciones simples directamente dentro de llamadas a otras funciones, en este caso, seleccionando la acción óptima sin necesidad de una declaración de función adicional.
+getAction() utiliza una función lambda para elegir la acción que maximiza el valor esperado, calculado por getActionValue. Lambda es eficiente para pasar funciones simples directamente dentro de llamadas a otras funciones, en este caso, seleccionando la acción óptima sin necesidad de una declaración de función adicional. Igual solo use metodo lambda para estetica de codigo
 
 getActionValue() asigna valores a las acciones de Pacman y fantasmas. Para Pacman, maxValue busca la acción con la mayor evaluación positiva. Para los fantasmas, expectValue calcula un promedio de valores posibles, reflejando su comportamiento aleatorio. Este promedio es el "valor esperado", permite anticipar y planificar contra movimientos aleatorios de los fantasmas.
 
