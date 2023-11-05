@@ -10,11 +10,14 @@ Question 1.
 Mejoré la función de evaluación para crear un equilibrio entre la búsqueda activa de comida y la evasión  de los fantasmas. Utilizo la distancia de Manhattan, una medida simple y eficiente, para evaluar qué tan cerca está Pacman de la comida y los fantasmas asustados, otorgando recompensas basadas en esta proximidad. Para evitar que Pacman caiga en patrones repetitivos de huida (como estar dando vueltas sin sentido), he introducido una penalización significativa si un fantasma no asustado se encuentra demasiado cerca.  
 
 Question 2.
-Max Value() - Esta función representa la lógica de decisión de Pacman. Se busca el valor máximo entre los valores devueltos por minValue, representando el mejor resultado posible para Pacman tras los movimientos de los fantasmas.
+Max Value()
+Representa la lógica de decisión de Pacman. Se busca el valor máximo entre los valores devueltos por minValue, representando el mejor resultado posible para Pacman tras los movimientos de los fantasmas.
 
-Min Value() - Esta función representa la lógica de decisión de los fantasmas. Itera sobre las acciones legales del fantasma y llama a maxValue o minValue según corresponda, buscando el valor más bajo para simular la mejor jugada de los fantasmas.
+Min Value()
+Representa la lógica de decisión de los fantasmas. Itera sobre las acciones legales del fantasma y llama a maxValue o minValue según corresponda, buscando el valor más bajo para simular la mejor jugada de los fantasmas.
 
-getAction() - La función principal que determina la acción de Pacman. Itera sobre las acciones legales de Pacman y llama a minValue para el primer fantasma. La acción que conduce al valor más alto es seleccionada, asumiendo que los fantasmas juegan de manera óptima
+getAction()
+Función principal que determina la acción de Pacman. Itera sobre las acciones legales de Pacman y llama a minValue para el primer fantasma. La acción que conduce al valor más alto es seleccionada, asumiendo que los fantasmas juegan de manera óptima
 Question 4 y 5 (Tuve que hacer la 4 para poder hacer la 5)
 
 getAction() utiliza una función lambda para elegir la acción que maximiza el valor esperado, calculado por getActionValue. Lambda es eficiente para pasar funciones simples directamente dentro de llamadas a otras funciones, en este caso, seleccionando la acción óptima sin necesidad de una declaración de función adicional.
