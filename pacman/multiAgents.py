@@ -196,26 +196,93 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
     """
-
     def getAction(self, gameState):
         """
-          Returns the expectimax action using self.depth and self.evaluationFunction
+        Returns the expectimax action using self.depth and self.evaluationFunction
 
-          All ghosts should be modeled as choosing uniformly at random from their
-          legal moves.
+        All ghosts should be modeled as choosing uniformly at random from their
+        legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return max(gameState.getLegalActions(0), key=lambda action: self.getActionValue(gameState.generateSuccessor(0, action), 1, self.depth))
+
+    def getActionValue(self, gameState, agentIndex, depth):
+        """
+        Retorna el valor de la acción dado un gameState y un agente.
+        """
+        if agentIndex == 0:  # Turno de pacman
+            return self.maxValue(gameState, depth)
+        else:  # Turno fantasma
+            return self.expectValue(gameState, agentIndex, depth)
+
+    def expectValue(self, gameState, agentIndex, depth):
+        """
+        Retorna el valor esperado para un gameState y un agente dado
+        """
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
+        nextAgent = agentIndex + 1 if agentIndex + 1 < gameState.getNumAgents() else 0
+        nextDepth = depth if agentIndex + 1 < gameState.getNumAgents() else depth - 1
+        legalActions = gameState.getLegalActions(agentIndex)
+        if not legalActions:
+            return self.evaluationFunction(gameState)
+        score = sum(self.getActionValue(gameState.generateSuccessor(agentIndex, action), nextAgent, nextDepth) for action in legalActions)
+        return score / len(legalActions)
+
+    def maxValue(self, gameState, depth):
+        """
+        Retorna el valor máximo dado un gameState
+        """
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
+        legalActions = gameState.getLegalActions(0)
+        if not legalActions:
+            return self.evaluationFunction(gameState)
+        return max(self.getActionValue(gameState.generateSuccessor(0, action), 1, depth) for action in legalActions)
+
 
 def betterEvaluationFunction(currentGameState):
     """
-      Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
-      evaluation function (question 5).
+    Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
+    evaluation function (question 5).
 
-      DESCRIPTION: <write something here so we know what you did>
+    DESCRIPCIÓN: Esta función de evaluación toma en cuenta lo siguiente:
+    - El recíproco de la distancia a la comida más cercana.
+    - El número de comidas restantes.
+    - La distancia al fantasma asustado más cercano.
+    - La distancia al fantasma activo más cercano.
+    - El número de cápsulas restantes.
+    - La puntuación del juego.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    newCapsules = currentGameState.getCapsules()
+
+    # Distancia a la comida más cercanad
+    foodDistances = [manhattanDistance(newPos, food) for food in newFood.asList()]
+    nearestFoodDistance = min(foodDistances) if foodDistances else 1
+
+    #Distancia al fantasma asustado más cercano
+    scaredGhosts = [(manhattanDistance(newPos, ghost.getPosition()), scaredTime) for ghost, scaredTime in zip(newGhostStates, newScaredTimes) if scaredTime > 0]
+    nearestScaredGhostDistance = min(scaredGhosts)[0] if scaredGhosts else 0
+
+    # Distancia al fantasma activo más cercano
+    activeGhosts = [manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates if ghost.scaredTimer == 0]
+    nearestActiveGhostDistance = min(activeGhosts) if activeGhosts else 0
+
+     # Número de cápsulas restantes
+    numCapsulesLeft = len(newCapsules)
+
+     # Se combinan los factores
+    score = currentGameState.getScore()
+    score += (1 / nearestFoodDistance) * 10
+    score += nearestScaredGhostDistance * 2
+    if nearestActiveGhostDistance > 0:
+        score -= (1 / nearestActiveGhostDistance) * 10
+    score -= numCapsulesLeft * 20
+
+    return score   
 
 # Abbreviation
 better = betterEvaluationFunction
